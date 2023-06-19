@@ -7,5 +7,9 @@ body {
     display: grid;
     place-items: center;
     font-family: 'Roboto', sans-serif;
-    background: radial-gradient(50% 50% at 50% 50%, #EAEAFE 0%, rgba(221, 246, 243, 0) 300%);;
+    background: radial-gradient(50% 50% at 50% 50%, #EAEAFE 0%, rgba(221, 246, 243, 0) 300%);
+
+    @media only screen and (max-width: 425px) {
+        padding: 20px;
+    }
 }

@@ -63,7 +63,7 @@
             </div>
         </div>
         <div class="button-line">
-            <button [disabled]="converterForm.invalid" suiColour="green" sui-button>
+            <button [disabled]="converterForm.invalid" suiColour="green" [suiLoading]="isSubmitting" sui-button>
                 Calculate
             </button>
         </div>

@@ -1,7 +1,6 @@
-import { Component, OnInit, OnChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ISelectOption } from 'ngx-semantic/modules/select';
-import { Router } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
 import { CurrencyService } from '../../services/currency.service';
 
@@ -17,10 +16,11 @@ import { CurrencyService } from '../../services/currency.service';
 //   rate_for_amount: string;
 // }
 
-export class FormComponent implements OnInit, OnChanges  {
+export class FormComponent implements OnInit  {
   currencies: ISelectOption[] = []
   calculatedAmount: string = ""
   exchangeRate: string = ""
+  isSubmitting: boolean = false
 
   constructor(
     private notify: NotificationService,
@@ -67,12 +67,16 @@ export class FormComponent implements OnInit, OnChanges  {
 
   ngOnInit(): void {
     this.fetchCurrencies();
+    this.onChanges();
   }
 
-  ngOnChanges(): void {
-    if (this.calculatedAmount !== "") {
-      this.resetExchange()
-    }
+  onChanges(): void {
+    this.converterForm.valueChanges.subscribe(() => {
+      console.log("yes")
+      if (this.calculatedAmount !== "" && !this.isSubmitting) {
+        this.resetExchange()
+      }
+    })
   }
 
   calculateAmount() {
@@ -81,6 +85,7 @@ export class FormComponent implements OnInit, OnChanges  {
     if (this.converterForm.value.fromCurr === this.converterForm.value.toCurr) {
       this.notify.showError("Conversion cannot be carried out between the same currencies")
     } else {
+      this.isSubmitting = true
       const amount = String(this.converterForm.value.amount)
       const from = String(this.converterForm.value.fromCurr)
       const to = String(this.converterForm.value.toCurr)
@@ -88,22 +93,26 @@ export class FormComponent implements OnInit, OnChanges  {
         (data: any) => {
           console.log(data)
           if (data.rates) {
-            const rates: any = Object.values(data.rates)
-            this.calculatedAmount = `${amount} ${from} = ${rates.rate_for_amount} ${to}`
+            const rates: any = Object.values(data.rates)[0]
+            console.log(rates)
+            this.calculatedAmount = `${amount} ${from} = ${Number(rates.rate_for_amount).toFixed(2).toLocaleString()} ${to}`
             this.exchangeRate = `1 ${from} = ${rates.rate} ${to}`
 
             this.converterForm.reset()
           }
+          this.isSubmitting = false
         },
         (error: any) => {
           this.notify.showError(error.message);
           console.error(error)
+          this.isSubmitting = false
         }
       )
     }
   }
 
   resetExchange() {
+    console.log("no")
     this.calculatedAmount = ""
     this.exchangeRate = ""
   }
