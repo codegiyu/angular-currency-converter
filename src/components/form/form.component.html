@@ -1,0 +1,79 @@
+<section class="form_wrap">
+    <form sui-form [formGroup]="converterForm" (ngSubmit)="calculateAmount()" novalidate>
+        <div suiFormField>
+            <label for="amount">Amount</label>
+            <input 
+                type="number" 
+                name="amount" 
+                formControlName="amount"
+                id="amount"
+                required
+            />
+            <div *ngIf="amount?.touched && amount?.errors" class="error-line">
+                <span
+                    *ngIf="amount && amount?.touched && amount.errors && amount.errors['required']"
+                    class="ui pointing red basic label"
+                >
+                    Amount is required
+                </span>
+                <span
+                    *ngIf="amount && amount.touched && amount.errors && amount.errors['min']"
+                    class="ui pointing red basic label"
+                >
+                    Amount should not be less than 1
+                </span>
+            </div>
+        </div>
+        <div suiFormField>
+            <label for="fromCurr">From</label>
+            <sui-select 
+                [suiSearch]="true"
+                [suiOptions]="currencies"
+                name="fromCurr" 
+                formControlName="fromCurr"
+                id="fromCurr"
+                required
+            ></sui-select>
+            <div *ngIf="fromCurr?.touched && fromCurr?.errors" class="error-line">
+                <span
+                    *ngIf="fromCurr && fromCurr?.touched && fromCurr.errors && fromCurr.errors['required']"
+                    class="ui pointing red basic label"
+                >
+                    Currency is required
+                </span>
+            </div>
+        </div>
+        <div suiFormField>
+            <label for="toCurr">To</label>
+            <sui-select 
+                [suiSearch]="true"
+                [suiOptions]="currencies"
+                name="toCurr" 
+                formControlName="toCurr"
+                id="toCurr"
+                required
+            ></sui-select>
+            <div *ngIf="toCurr?.touched && toCurr?.errors" class="error-line">
+                <span
+                    *ngIf="toCurr && toCurr?.touched && toCurr.errors && toCurr.errors['required']"
+                    class="ui pointing red basic label"
+                >
+                    Currency is required
+                </span>
+            </div>
+        </div>
+        <div class="button-line">
+            <button [disabled]="converterForm.invalid" suiColour="green" sui-button>
+                Calculate
+            </button>
+        </div>
+        <div class="solution-line" *ngIf="calculatedAmount && exchangeRate">
+            <div sui-header suiSize="medium" suiAlignment="left aligned">
+                {{ calculatedAmount }}
+                <div suiSubHeader>
+                    {{ exchangeRate }}
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
